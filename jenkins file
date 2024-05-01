@@ -5,6 +5,18 @@ pipeline {
             steps {
                 echo 'Performing build...'
             }
+            post {
+                success {
+                    emailext subject: 'Pipeline Success',
+                             body: 'The pipeline completed successfully.',
+                             to: 'sireesha2622@gmail.com'
+                }
+                failure {
+                    emailext subject: 'Pipeline Failure',
+                             body: 'The pipeline failed. Please check the Jenkins logs for more details.',
+                             to: 'sireesha2622@gmail.com'
+                }
+            }
         }
         stage('Unit and Integration Tests') {
             steps {
@@ -12,18 +24,17 @@ pipeline {
                 // You can run tests using appropriate tools here
             }
             post {
-                
                 success {
-                emailext subject: 'Pipeline Success',
-                     body: 'The pipeline completed successfully.',
-                     to: 'sireesha2622@gmail.com'
+                    emailext subject: 'Pipeline Success',
+                             body: 'The pipeline completed successfully.',
+                             to: 'sireesha2622@gmail.com'
                 }
                 failure {
-                emailext subject: 'Pipeline Failure',
-                     body: 'The pipeline failed. Please check the Jenkins logs for more details.',
-                     to: 'sireesha2622@gmail.com'
+                    emailext subject: 'Pipeline Failure',
+                             body: 'The pipeline failed. Please check the Jenkins logs for more details.',
+                             to: 'sireesha2622@gmail.com'
                 }
-        }
+            }
         }
         stage('Code Analysis') {
             steps {
@@ -31,18 +42,17 @@ pipeline {
                 // Integrate a code analysis tool using Jenkins plugin
             }
             post {
-                
                 success {
-                emailext subject: 'Pipeline Success',
-                     body: 'The pipeline completed successfully.',
-                     to: 'sireesha2622@gmail.com'
+                    emailext subject: 'Pipeline Success',
+                             body: 'The pipeline completed successfully.',
+                             to: 'sireesha2622@gmail.com'
                 }
                 failure {
-                emailext subject: 'Pipeline Failure',
-                     body: 'The pipeline failed. Please check the Jenkins logs for more details.',
-                     to: 'sireesha2622@gmail.com'
+                    emailext subject: 'Pipeline Failure',
+                             body: 'The pipeline failed. Please check the Jenkins logs for more details.',
+                             to: 'sireesha2622@gmail.com'
                 }
-        }
+            }
         }
         stage('Security Scan') {
             steps {
@@ -50,17 +60,17 @@ pipeline {
                 // Perform a security scan using a specific tool, such as SonarQube or OWASP ZAP
             }
             post {
-                
                 success {
-                emailext subject: 'Pipeline Success',
-                     body: 'The pipeline completed successfully.',
-                     to: 'sireesha2622@gmail.com'
+                    emailext subject: 'Pipeline Success',
+                             body: 'The pipeline completed successfully.',
+                             to: 'sireesha2622@gmail.com'
                 }
                 failure {
-                emailext subject: 'Pipeline Failure',
-                     body: 'The pipeline failed. Please check the Jenkins logs for more details.',
-                     to: 'sireesha2622@gmail.com'
+                    emailext subject: 'Pipeline Failure',
+                             body: 'The pipeline failed. Please check the Jenkins logs for more details.',
+                             to: 'sireesha2622@gmail.com'
                 }
+            }
         }
         stage('Deploy to Staging') {
             steps {
@@ -81,5 +91,4 @@ pipeline {
             }
         }
     }
-}
 }
