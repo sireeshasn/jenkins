@@ -1,64 +1,85 @@
 pipeline {
     agent any
-    environment {
-        TESTING_ENVIRONMENT = "QA"
-        PRODUCTION_ENVIRONMENT = "Sireesha"
-    }
+    
     stages {
         stage('Build') {
             steps {
-                sh 'echo "Building the code..."'
+                // Use Maven to build the code
+                sh 'mvn clean package'
             }
         }
+        
         stage('Unit and Integration Tests') {
             steps {
-                sh 'echo "Running unit and integration tests..."'
+                // Run unit tests
+                sh 'mvn test'
+                
+                // Run integration tests
+                // You may need to start your application and then run the tests
+                sh 'mvn integration-test'
             }
         }
+        
         stage('Code Analysis') {
             steps {
-                
-                sh 'echo "Performing code analysis..."'
+                // Integrate with SonarQube for code analysis
+                // This requires SonarQube server running and Jenkins integration
+                // Example:
+                sh 'sonar-scanner'
             }
         }
+        
         stage('Security Scan') {
             steps {
-          
-                sh 'echo "Performing security scan..."'
+                // Perform security scan using OWASP Dependency-Check
+                // Example:
+                sh 'dependency-check.sh -o /output/directory'
             }
         }
+        
         stage('Deploy to Staging') {
             steps {
-             
-                sh 'echo "Deploying to staging..."'
+                // Deploy to AWS EC2 staging server using AWS CLI or Jenkins AWS plugin
+                // Example:
+                sh 'aws s3 cp ./target/app.jar s3://staging-bucket/'
+                sh 'aws deploy --region us-east-1 --application myApp --deployment-group staging --s3-location bucket=staging-bucket,bundleType=zip,key=app.jar'
             }
         }
+        
         stage('Integration Tests on Staging') {
             steps {
-
-                sh 'echo "Running integration tests on staging..."'
+                // Run integration tests on the staging environment
+                // Example:
+                sh 'mvn integration-test -Denv=staging'
             }
         }
+        
         stage('Deploy to Production') {
             steps {
-                sh 'echo "Deploying to production..."'
+                // Deploy to AWS EC2 production server
+                // Example:
+                sh 'aws s3 cp ./target/app.jar s3://production-bucket/'
+                sh 'aws deploy --region us-east-1 --application myApp --deployment-group production --s3-location bucket=production-bucket,bundleType=zip,key=app.jar'
             }
         }
     }
     
     post {
         success {
-            emailext (
-                to: 'sireesha2622@gmail.com',
-                subject: 'Pipeline Success',
-                body: "The pipeline has completed successfully in the ${TESTING_ENVIRONMENT} environment."
+            // Send success email notification
+            emailext(
+                subject: "Pipeline Status: Success",
+                body: "The pipeline completed successfully.",
+                to: "sireesha2622@gmail.com"
             )
         }
         failure {
-            emailext (
-                to: 'sireesha2622@gmail.com',
-                subject: 'Pipeline Failure',
-                body: "The pipeline has failed in the ${TESTING_ENVIRONMENT} environment. Please investigate."
+            // Send failure email notification with logs attached
+            emailext(
+                subject: "Pipeline Status: Failure",
+                body: "The pipeline failed. See attached logs for details.",
+                to: "sireesha2622@gmail.com",
+                attachLog: true
             )
         }
     }
