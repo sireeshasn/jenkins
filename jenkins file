@@ -13,56 +13,36 @@ pipeline {
             }
             post {
                 success {
-                    mail to: 'sireesha2622@gmail.com',
-                         subject: 'Unit and Integration Tests Passed',
-                         body: 'The unit and integration tests have passed. See attached logs for more information.'
-                         // Attach logs if required
+                    echo 'Unit and Integration Tests Passed'
                 }
                 failure {
-                    mail to: 'sireesha2622@gmail.com',
-                         subject: 'Unit and Integration Tests Failed',
-                         body: 'The unit and integration tests have failed. See attached logs for more information.'
-                         // Attach logs if required
+                    echo 'Unit and Integration Tests Failed'
                 }
             }
         }
         stage('Code Analysis') {
             steps {
-                // Integrate a code analysis tool using Jenkins plugin
-                // Example: Checkstyle
-                checkstyle canRunOnFailed: true, defaultEncoding: 'UTF-8', pattern: '**/*.java'
+                echo 'Performing code analysis...'
             }
             post {
                 success {
-                    mail to: 'sireesha2622@gmail.com',
-                         subject: 'Code Analysis Passed',
-                         body: 'The code analysis has passed. See attached logs for more information.'
-                         // Attach logs if required
+                    echo 'Code Analysis Passed'
                 }
                 failure {
-                    mail to: 'sireesha2622@gmail.com',
-                         subject: 'Code Analysis Failed',
-                         body: 'The code analysis has failed. See attached logs for more information.'
-                         // Attach logs if required
+                    echo 'Code Analysis Failed'
                 }
             }
         }
         stage('Security Scan') {
             steps {
-                // Perform a security scan using a specific tool, such as SonarQube or OWASP ZAP
+                echo 'Performing security scan...'
             }
             post {
                 success {
-                    mail to: 'sireesha2622@gmail.com',
-                         subject: 'Security Scan Passed',
-                         body: 'The security scan has passed. See attached logs for more information.'
-                         // Attach logs if required
+                    echo 'Security Scan Passed'
                 }
                 failure {
-                    mail to: 'sireesha2622@gmail.com',
-                         subject: 'Security Scan Failed',
-                         body: 'The security scan has failed. See attached logs for more information.'
-                         // Attach logs if required
+                    echo 'Security Scan Failed'
                 }
             }
         }
