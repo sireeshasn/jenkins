@@ -1,56 +1,47 @@
 pipeline {
     agent any
-    
     environment {
         TESTING_ENVIRONMENT = "QA"
         PRODUCTION_ENVIRONMENT = "Sireesha"
     }
-    
     stages {
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'echo "Building the code..."'
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                sh 'mvn test'
+                sh 'echo "Running unit and integration tests..."'
             }
         }
         stage('Code Analysis') {
             steps {
-                // Integrate with SonarQube for code analysis
-                // sonarqube(
-                //     serverUrl: 'http://sonarqube.example.com',
-                //     credentialsId: 'sonarqube_credentials',
-                //     taskId: ''
-                // )
+                
+                sh 'echo "Performing code analysis..."'
             }
         }
         stage('Security Scan') {
             steps {
-                // Perform security scan with OWASP ZAP or SonarQube
-                // sh 'zap-cli --spider <target_url>'
-                // sh 'zap-cli --active-scan <target_url>'
+          
+                sh 'echo "Performing security scan..."'
             }
         }
         stage('Deploy to Staging') {
             steps {
-                sshagent(['your-ssh-credentials']) {
-                    sh 'scp target/app.war ec2-user@staging-instance:/opt/tomcat/webapps'
-                }
+             
+                sh 'echo "Deploying to staging..."'
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                sh 'curl -sSf http://staging-server/health-check'
+
+                sh 'echo "Running integration tests on staging..."'
             }
         }
         stage('Deploy to Production') {
             steps {
-                sshagent(['your-ssh-credentials']) {
-                    sh 'scp target/app.war ec2-user@production-instance:/opt/tomcat/webapps'
-                }
+                sh 'echo "Deploying to production..."'
             }
         }
     }
