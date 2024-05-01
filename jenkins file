@@ -13,13 +13,13 @@ pipeline {
             }
             post {
                 success {
-                    mail to: 'you@example.com',
+                    mail to: 'sireesha2622@gmail.com',
                          subject: 'Unit and Integration Tests Passed',
                          body: 'The unit and integration tests have passed. See attached logs for more information.',
                          attachLog: true
                 }
                 failure {
-                    mail to: 'you@example.com',
+                    mail to: 'sireesha2622@gmail.com',
                          subject: 'Unit and Integration Tests Failed',
                          body: 'The unit and integration tests have failed. See attached logs for more information.',
                          attachLog: true
