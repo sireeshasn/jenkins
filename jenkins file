@@ -1,70 +1,85 @@
 pipeline {
     agent any
-    
+    environment {
+        TESTING_ENVIRONMENT = "QA"
+        PRODUCTION_ENVIRONMENT = "Sireesha"
+    }
+
     stages {
         stage('Build') {
             steps {
-                // Use Maven to build the code
+                // Stage 1: Build
+                // Compile and package the code using Maven
                 sh 'mvn clean package'
             }
         }
         
         stage('Unit and Integration Tests') {
             steps {
-                // Run unit tests
+                // Stage 2: Unit and Integration Tests
+                // Run unit tests using JUnit
                 sh 'mvn test'
                 
-                // Run integration tests
-                // You may need to start your application and then run the tests
-                sh 'mvn integration-test'
+                // Run integration tests using Selenium
+                // Note: Selenium tests might require a separate environment setup
+                // before execution
+                // Example:
+                // sh 'mvn integration-test'
             }
         }
         
         stage('Code Analysis') {
             steps {
-                // Integrate with SonarQube for code analysis
-                // This requires SonarQube server running and Jenkins integration
+                // Stage 3: Code Analysis
+                // Analyze the code using SonarQube
+                // Note: SonarQube server URL and authentication details need
+                // to be configured in Jenkins
                 // Example:
-                sh 'sonar-scanner'
+                // withSonarQubeEnv('SonarQube') {
+                //     sh 'mvn sonar:sonar'
+                // }
             }
         }
         
         stage('Security Scan') {
             steps {
-                // Perform security scan using OWASP Dependency-Check
+                // Stage 4: Security Scan
+                // Perform a security scan using OWASP ZAP
                 // Example:
-                sh 'dependency-check.sh -o /output/directory'
+                // sh 'zap-cli --zap-url http://localhost:8080/ --spider http://localhost:8080/ --scan http://localhost:8080/'
             }
         }
         
         stage('Deploy to Staging') {
             steps {
-                // Deploy to AWS EC2 staging server using AWS CLI or Jenkins AWS plugin
+                // Stage 5: Deploy to Staging
+                // Deploy the application to a staging server using Jenkins
+                // and AWS CLI
                 // Example:
-                sh 'aws s3 cp ./target/app.jar s3://staging-bucket/'
-                sh 'aws deploy --region us-east-1 --application myApp --deployment-group staging --s3-location bucket=staging-bucket,bundleType=zip,key=app.jar'
+                // sh 'aws ec2 deploy-to-staging'
             }
         }
         
         stage('Integration Tests on Staging') {
             steps {
-                // Run integration tests on the staging environment
+                // Stage 6: Integration Tests on Staging
+                // Run integration tests on the staging environment using Selenium
                 // Example:
-                sh 'mvn integration-test -Denv=staging'
+                // sh 'mvn integration-test'
             }
         }
         
         stage('Deploy to Production') {
             steps {
-                // Deploy to AWS EC2 production server
+                // Stage 7: Deploy to Production
+                // Deploy the application to a production server using Jenkins
+                // and AWS CLI
                 // Example:
-                sh 'aws s3 cp ./target/app.jar s3://production-bucket/'
-                sh 'aws deploy --region us-east-1 --application myApp --deployment-group production --s3-location bucket=production-bucket,bundleType=zip,key=app.jar'
+                // sh 'aws ec2 deploy-to-production'
             }
         }
     }
-    
-    post {
+post {
         success {
             // Send success email notification
             emailext(
