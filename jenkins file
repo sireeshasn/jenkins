@@ -9,43 +9,66 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo "Fetching the source code from the directory path: ${env.DIRECTORY_PATH}"
-                echo "Compiling the code and generating necessary artifacts"
+                sh 'mvn clean package'
             }
         }
-        
-        stage('Test') {
+        stage('Unit and Integration Tests') {
             steps {
-                echo "Running unit tests"
-                echo "Running integration tests"
+                sh 'mvn test'
             }
         }
-        
-        stage('Code Quality Check') {
+        stage('Code Analysis') {
             steps {
-                echo "Checking the quality of the code"
+                // Integrate with SonarQube for code analysis
+                // sonarqube(
+                //     serverUrl: 'http://sonarqube.example.com',
+                //     credentialsId: 'sonarqube_credentials',
+                //     taskId: ''
+                // )
             }
         }
-        
-        stage('Deploy') {
+        stage('Security Scan') {
             steps {
-                echo "Deploying the application to testing environment: ${env.TESTING_ENVIRONMENT}"
+                // Perform security scan with OWASP ZAP or SonarQube
+                // sh 'zap-cli --spider <target_url>'
+                // sh 'zap-cli --active-scan <target_url>'
             }
         }
-        
-        stage('Approval') {
+        stage('Deploy to Staging') {
             steps {
-                script {
-                    echo "Waiting for manual approval..."
-                    sleep time: 10, unit: 'SECONDS'
+                sshagent(['your-ssh-credentials']) {
+                    sh 'scp target/app.war ec2-user@staging-instance:/opt/tomcat/webapps'
                 }
             }
         }
-        
+        stage('Integration Tests on Staging') {
+            steps {
+                sh 'curl -sSf http://staging-server/health-check'
+            }
+        }
         stage('Deploy to Production') {
             steps {
-                echo "Deploying the code to production environment: ${env.PRODUCTION_ENVIRONMENT}"
+                sshagent(['your-ssh-credentials']) {
+                    sh 'scp target/app.war ec2-user@production-instance:/opt/tomcat/webapps'
+                }
             }
+        }
+    }
+    
+    post {
+        success {
+            emailext (
+                to: 'sireesha2622@gmail.com',
+                subject: 'Pipeline Success',
+                body: "The pipeline has completed successfully in the ${TESTING_ENVIRONMENT} environment."
+            )
+        }
+        failure {
+            emailext (
+                to: 'sireesha2622@gmail.com',
+                subject: 'Pipeline Failure',
+                body: "The pipeline has failed in the ${TESTING_ENVIRONMENT} environment. Please investigate."
+            )
         }
     }
 }
