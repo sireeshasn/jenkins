@@ -1,101 +1,85 @@
 pipeline {
     agent any
-    environment {
-        TESTING_ENVIRONMENT = "QA"
-        PRODUCTION_ENVIRONMENT = "Sireesha"
-    }
-
     stages {
         stage('Build') {
             steps {
-                // Stage 1: Build
-                // Compile and package the code using Maven
                 sh 'mvn clean package'
             }
         }
-        
         stage('Unit and Integration Tests') {
             steps {
-                // Stage 2: Unit and Integration Tests
-                // Run unit tests using JUnit
                 sh 'mvn test'
-                
-                // Run integration tests using Selenium
-                // Note: Selenium tests might require a separate environment setup
-                // before execution
-                // Example:
-                // sh 'mvn integration-test'
+                // Run integration tests using a specific tool, such as Selenium or JMeter
+            }
+            post {
+                success {
+                    mail to: 'you@example.com',
+                         subject: 'Unit and Integration Tests Passed',
+                         body: 'The unit and integration tests have passed. See attached logs for more information.',
+                         attachLog: true
+                }
+                failure {
+                    mail to: 'you@example.com',
+                         subject: 'Unit and Integration Tests Failed',
+                         body: 'The unit and integration tests have failed. See attached logs for more information.',
+                         attachLog: true
+                }
             }
         }
-        
         stage('Code Analysis') {
             steps {
-                // Stage 3: Code Analysis
-                // Analyze the code using SonarQube
-                // Note: SonarQube server URL and authentication details need
-                // to be configured in Jenkins
-                // Example:
-                // withSonarQubeEnv('SonarQube') {
-                //     sh 'mvn sonar:sonar'
-                // }
+                // Integrate a code analysis tool using Jenkins plugin
+                // Example: Checkstyle
+                checkstyle canRunOnFailed: true, defaultEncoding: 'UTF-8', pattern: '**/*.java'
+            }
+            post {
+                success {
+                    mail to: 'sireesha2622@gmail.com',
+                         subject: 'Code Analysis Passed',
+                         body: 'The code analysis has passed. See attached logs for more information.',
+                         attachLog: true
+                }
+                failure {
+                    mail to: 'sireesha2622@gmail.com',
+                         subject: 'Code Analysis Failed',
+                         body: 'The code analysis has failed. See attached logs for more information.',
+                         attachLog: true
+                }
             }
         }
-        
         stage('Security Scan') {
             steps {
-                // Stage 4: Security Scan
-                // Perform a security scan using OWASP ZAP
-                // Example:
-                // sh 'zap-cli --zap-url http://localhost:8080/ --spider http://localhost:8080/ --scan http://localhost:8080/'
+                // Perform a security scan using a specific tool, such as SonarQube or OWASP ZAP
+            }
+            post {
+                success {
+                    mail to: 'sireesha2622@gmail.com',
+                         subject: 'Security Scan Passed',
+                         body: 'The security scan has passed. See attached logs for more information.',
+                         attachLog: true
+                }
+                failure {
+                    mail to: 'sireesha2622@gmail.com',
+                         subject: 'Security Scan Failed',
+                         body: 'The security scan has failed. See attached logs for more information.',
+                         attachLog: true
+                }
             }
         }
-        
         stage('Deploy to Staging') {
             steps {
-                // Stage 5: Deploy to Staging
-                // Deploy the application to a staging server using Jenkins
-                // and AWS CLI
-                // Example:
-                // sh 'aws ec2 deploy-to-staging'
+                // Deploy the application to a staging server using a specific tool, such as AWS Elastic Beanstalk or Docker
             }
         }
-        
         stage('Integration Tests on Staging') {
             steps {
-                // Stage 6: Integration Tests on Staging
-                // Run integration tests on the staging environment using Selenium
-                // Example:
-                // sh 'mvn integration-test'
+                // Run integration tests on the staging environment using a specific tool, such as Selenium or JMeter
             }
         }
-        
         stage('Deploy to Production') {
             steps {
-                // Stage 7: Deploy to Production
-                // Deploy the application to a production server using Jenkins
-                // and AWS CLI
-                // Example:
-                // sh 'aws ec2 deploy-to-production'
+                // Deploy the application to a production server using a specific tool, such as AWS Elastic Beanstalk or Docker
             }
-        }
-    }
-post {
-        success {
-            // Send success email notification
-            emailext(
-                subject: "Pipeline Status: Success",
-                body: "The pipeline completed successfully.",
-                to: "sireesha2622@gmail.com"
-            )
-        }
-        failure {
-            // Send failure email notification with logs attached
-            emailext(
-                subject: "Pipeline Status: Failure",
-                body: "The pipeline failed. See attached logs for details.",
-                to: "sireesha2622@gmail.com",
-                attachLog: true
-            )
         }
     }
 }
